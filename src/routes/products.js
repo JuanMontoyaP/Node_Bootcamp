@@ -40,4 +40,50 @@ router.post("/", async (req, res) => {
   });
 });
 
+router.put("/:id", async (req, res) => {
+  const my_products = await Promise.resolve(products);
+
+  const my_product = my_products.filter(
+    (products) => products.id === parseInt(req.params.id)
+  )[0];
+
+  const modified_product = req.body;
+
+  my_product.name = modified_product.name;
+  my_product.price = modified_product.price;
+  my_product.description = modified_product.description;
+
+  res.status(200).json({
+    data: my_products,
+  });
+});
+
+router.patch("/:id", async (req, res) => {
+  const my_products = await Promise.resolve(products);
+
+  const my_product = my_products.filter(
+    (products) => products.id === parseInt(req.params.id)
+  )[0];
+
+  const modified_product = req.body;
+
+  my_product.name = modified_product.name;
+  my_product.price = modified_product.price;
+
+  res.status(200).json({
+    data: my_products,
+  });
+});
+
+router.delete("/:id", async (req, res) => {
+  const my_products = await Promise.resolve(products);
+  const product_id_delete = req.params.id;
+
+  res.status(200).json({
+    data: my_products.filter(
+      (product) => product.id !== parseInt(product_id_delete)
+    ),
+  });
+});
+
 module.exports = router;
