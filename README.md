@@ -54,3 +54,10 @@ Common HTTP verbs for API's:
   - 200 (OK)
   - 404 (Not Found)
   - 500 (Internal Server Error)
+
+## Cohesion and Coupling
+
+Our backend architecture should have high cohesion and low coupling.
+
+- Cohesion is a measurement that one component realizes just one task.
+- Coupling is a measurement that one component depends on another component. If there are changes in one component they are going to be reflected in the other component.
