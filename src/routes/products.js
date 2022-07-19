@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { products } = require("../data/");
+const ProductService = require("../services/products");
+
+const productService = new ProductService();
 
 router.get("/all", async (req, res) => {
-  const my_products = await Promise.resolve(products);
+  const my_products = await productService.getProducts();
 
   res.status(200).json({
     data: my_products,
@@ -12,28 +14,28 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/detail/:id", async (req, res) => {
-  const id = req.params.id;
-
-  const my_products = await Promise.resolve(products);
+  const id = parseInt(req.params.id);
+  const my_product_detail = await productService.getProductDetail(id);
 
   res.status(200).json({
-    data: my_products[id],
+    data: my_product_detail,
   });
 });
 
 router.get("/", async (req, res) => {
-  const query = req.query;
-  const my_products = await Promise.resolve(products);
+  const product_name = req.query.name;
+  const my_products_by_name = await productService.getProductsByName(
+    product_name
+  );
 
   res.status(200).json({
-    data: my_products,
+    data: my_products_by_name,
   });
 });
 
 router.post("/", async (req, res) => {
-  const my_products = await Promise.resolve(products);
-
-  my_products.push(req.body);
+  const new_product = req.body;
+  const my_products = await productService.saveNewProduct(new_product);
 
   res.status(201).json({
     data: my_products,
@@ -41,48 +43,33 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const my_products = await Promise.resolve(products);
-
-  const my_product = my_products.filter(
-    (products) => products.id === parseInt(req.params.id)
-  )[0];
-
-  const modified_product = req.body;
-
-  my_product.name = modified_product.name;
-  my_product.price = modified_product.price;
-  my_product.description = modified_product.description;
+  const id = req.params.id;
+  const product_to_update = req.body;
+  const product = await productService.updateProduct(id, product_to_update);
 
   res.status(200).json({
-    data: my_products,
+    data: product,
   });
 });
 
 router.patch("/:id", async (req, res) => {
-  const my_products = await Promise.resolve(products);
-
-  const my_product = my_products.filter(
-    (products) => products.id === parseInt(req.params.id)
-  )[0];
-
-  const modified_product = req.body;
-
-  my_product.name = modified_product.name;
-  my_product.price = modified_product.price;
+  const id = req.params.id;
+  const product_to_update = req.body;
+  const product = await productService.updateProduct(id, product_to_update);
 
   res.status(200).json({
-    data: my_products,
+    data: product,
   });
 });
 
 router.delete("/:id", async (req, res) => {
-  const my_products = await Promise.resolve(products);
   const product_id_delete = req.params.id;
+  const new_product_list = await productService.deleteProduct(
+    product_id_delete
+  );
 
   res.status(200).json({
-    data: my_products.filter(
-      (product) => product.id !== parseInt(product_id_delete)
-    ),
+    data: new_product_list,
   });
 });
 
