@@ -2,27 +2,33 @@ const express = require("express");
 const router = express.Router();
 
 const ProductService = require("../services/products");
-const { validate_data, method_not_allowed } = require("../middlewares");
+const { validate_data_Joi, method_not_allowed } = require("../middlewares");
+const { successResponse, errorResponse } = require("../utils/responses");
+const { productSchema } = require("../utils/schemas/product");
 
 const productService = new ProductService();
 
-router.use("/", method_not_allowed);
+// router.use("/", method_not_allowed);
 
 router.get("/all", async (req, res) => {
-  const my_products = await productService.getProducts();
-
-  res.status(200).json({
-    data: my_products,
-  });
+  try {
+    const my_products = await productService.getProducts();
+    successResponse(req, res, my_products);
+  } catch (error) {
+    console.error(`An error occurred: ${error.detailedError}`);
+    // errorResponse(req, res, error, error.errorCode);
+    errorResponse(req, res, error);
+  }
 });
 
 router.get("/detail/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  const my_product_detail = await productService.getProductDetail(id);
-
-  res.status(200).json({
-    data: my_product_detail,
-  });
+  try {
+    const my_product_detail = await productService.getProductDetail(id);
+    successResponse(req, res, my_product_detail);
+  } catch (error) {
+    errorResponse(req, res, error);
+  }
 });
 
 router.get("/", async (req, res) => {
@@ -36,7 +42,7 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.post("/", validate_data, async (req, res) => {
+router.post("/", validate_data_Joi(productSchema, "body"), async (req, res) => {
   const new_product = req.body;
   const my_products = await productService.saveNewProduct(new_product);
 

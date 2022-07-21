@@ -1,14 +1,28 @@
+const boom = require("@hapi/boom");
+
 const { products } = require("../data/");
+const NotFoundError = require("../utils/errors/notFoundError");
 
 class ProductService {
   async getProducts() {
     const all_products = await Promise.resolve(products);
-    return all_products || [];
+    if (all_products.length === 0) {
+      // throw new NotFoundError("Not found products", 404, "Database empty");
+      throw boom.notFound("Not found products");
+    }
+    return all_products;
   }
 
   async getProductDetail(id) {
     const all_products = await Promise.resolve(products);
-    return all_products.filter((product) => product.id === id);
+    const product = all_products.filter((product) => product.id === id)[0];
+    if (!product) {
+      throw boom.notFound("Product not found");
+    }
+    if (product.id === 1) {
+      throw boom.forbidden("Not allowed");
+    }
+    return product;
   }
 
   async getProductsByName(name) {
