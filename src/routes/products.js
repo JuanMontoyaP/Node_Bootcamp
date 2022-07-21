@@ -2,8 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const ProductService = require("../services/products");
+const { validate_data, method_not_allowed } = require("../middlewares");
 
 const productService = new ProductService();
+
+router.use("/", method_not_allowed);
 
 router.get("/all", async (req, res) => {
   const my_products = await productService.getProducts();
@@ -33,7 +36,7 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.post("/", async (req, res) => {
+router.post("/", validate_data, async (req, res) => {
   const new_product = req.body;
   const my_products = await productService.saveNewProduct(new_product);
 
