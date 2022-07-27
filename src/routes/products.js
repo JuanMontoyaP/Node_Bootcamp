@@ -44,42 +44,48 @@ router.get("/", async (req, res) => {
 
 router.post("/", validate_data_Joi(productSchema, "body"), async (req, res) => {
   const new_product = req.body;
-  const my_products = await productService.saveNewProduct(new_product);
 
-  res.status(201).json({
-    data: my_products,
-  });
+  try {
+    const my_products = await productService.saveNewProduct(new_product);
+    successResponse(req, res, my_products);
+  } catch (error) {
+    errorResponse(req, res, error);
+  }
 });
 
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
   const product_to_update = req.body;
-  const product = await productService.updateProduct(id, product_to_update);
 
-  res.status(200).json({
-    data: product,
-  });
+  try {
+    const product = await productService.updateProduct(id, product_to_update);
+    successResponse(req, res, product);
+  } catch (error) {
+    errorResponse(req, res, error);
+  }
 });
 
 router.patch("/:id", async (req, res) => {
   const id = req.params.id;
-  const product_to_update = req.body;
-  const product = await productService.updateProduct(id, product_to_update);
+  const productToUpdate = req.body;
 
-  res.status(200).json({
-    data: product,
-  });
+  try {
+    const product = await productService.updateProduct(id, productToUpdate);
+    successResponse(req, res, product);
+  } catch (error) {
+    errorResponse(req, res, error);
+  }
 });
 
 router.delete("/:id", async (req, res) => {
-  const product_id_delete = req.params.id;
-  const new_product_list = await productService.deleteProduct(
-    product_id_delete
-  );
+  const id = req.params.id;
 
-  res.status(200).json({
-    data: new_product_list,
-  });
+  try {
+    const deletedProduct = await productService.deleteProduct(id);
+    successResponse(req, res, deletedProduct);
+  } catch (error) {
+    errorResponse(req, res, error);
+  }
 });
 
 module.exports = router;
