@@ -1,31 +1,28 @@
 const boom = require("@hapi/boom");
 
-const { getConnection } = require("../db/postgres.pool");
+// const { getConnection } = require("../db/postgres.pool");
+const { models } = require("../db/sequelize");
 const { products } = require("../data/");
-const NotFoundError = require("../utils/errors/notFoundError");
+// const NotFoundError = require("../utils/errors/notFoundError");
 
 class ProductService {
   constructor() {
-    this.client = getConnection();
+    // this.client = getConnection();
   }
 
   async getProducts() {
     // const all_products = await Promise.resolve(products);
-
     // return all_products;
-
-    const dbClient = await this.client.connect();
-    const result = await dbClient.query("SELECT * FROM PRODUCTS");
-
-    const products = result.rows;
-
-    if (products.length === 0) {
-      // throw new NotFoundError("Not found products", 404, "Database empty");
-      throw boom.notFound("Not found products");
-    }
-
-    dbClient.release();
-
+    // const dbClient = await this.client.connect();
+    // const result = await dbClient.query("SELECT * FROM PRODUCTS");
+    // const GETPRODUCTS = "SELECT * FROM PRODUCTS";
+    // const [result, metadata] = await sequelize.query(GETPRODUCTS);
+    const products = await models.Products.findAll();
+    // if (products.length === 0) {
+    //   // throw new NotFoundError("Not found products", 404, "Database empty");
+    //   throw boom.notFound("Not found products");
+    // }
+    // dbClient.release();
     return products;
   }
 
