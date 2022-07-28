@@ -19,6 +19,14 @@ class UsersService {
     }
   }
 
+  async getUsers() {
+    try {
+      return await models.Users.findAll();
+    } catch (error) {
+      throw boom.internal(error.message);
+    }
+  }
+
   async getUserByUsername(username) {
     try {
       return await models.Users.findOne({

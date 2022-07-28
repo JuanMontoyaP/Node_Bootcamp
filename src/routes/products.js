@@ -1,10 +1,12 @@
 const express = require("express");
-const router = express.Router();
+const passport = require("passport");
 
 const ProductService = require("../services/products");
-const { validate_data_Joi, method_not_allowed } = require("../middlewares");
+const { validate_data_Joi } = require("../middlewares");
 const { successResponse, errorResponse } = require("../utils/responses");
 const { productSchema } = require("../utils/schemas/product");
+
+const router = express.Router();
 
 const productService = new ProductService();
 
@@ -42,16 +44,21 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.post("/", validate_data_Joi(productSchema, "body"), async (req, res) => {
-  const new_product = req.body;
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  validate_data_Joi(productSchema, "body"),
+  async (req, res) => {
+    const new_product = req.body;
 
-  try {
-    const my_products = await productService.saveNewProduct(new_product);
-    successResponse(req, res, my_products);
-  } catch (error) {
-    errorResponse(req, res, error);
+    try {
+      const my_products = await productService.saveNewProduct(new_product);
+      successResponse(req, res, my_products);
+    } catch (error) {
+      errorResponse(req, res, error);
+    }
   }
-});
+);
 
 router.put("/:id", async (req, res) => {
   const id = req.params.id;

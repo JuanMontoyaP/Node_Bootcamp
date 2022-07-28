@@ -106,48 +106,58 @@ class ProductService {
     // product_to_update.price = modified_product.price;
     // product_to_update.description = modified_product.description;
     // return product_to_update;
+    // const updateProduct =
+    //   "UPDATE PRODUCTS SET name=$1, price=$2, currency=$3, description=$4 WHERE ID=$5 RETURNING *";
+    // const values = [
+    //   modifiedProduct.name,
+    //   modifiedProduct.price,
+    //   modifiedProduct.currency,
+    //   modifiedProduct.description,
+    //   id,
+    // ];
+    // const dbClient = await this.client.connect();
+    // const productUpdated = await dbClient.query(updateProduct, values);
+    // dbClient.release();
+    // const affectedRows = productUpdated.rows.length;
+    // if (affectedRows === 0) {
+    //   throw boom.conflict("Product no updated");
+    // }
+    // return productUpdated.rows[0];
+    const product = await models.Products.findByPk(id);
 
-    const updateProduct =
-      "UPDATE PRODUCTS SET name=$1, price=$2, currency=$3, description=$4 WHERE ID=$5 RETURNING *";
-
-    const values = [
-      modifiedProduct.name,
-      modifiedProduct.price,
-      modifiedProduct.currency,
-      modifiedProduct.description,
-      id,
-    ];
-
-    const dbClient = await this.client.connect();
-    const productUpdated = await dbClient.query(updateProduct, values);
-    dbClient.release();
-
-    const affectedRows = productUpdated.rows.length;
-
-    if (affectedRows === 0) {
-      throw boom.conflict("Product no updated");
+    if (!product) {
+      throw boom.conflict("Not resource changed");
     }
-
-    return productUpdated.rows[0];
+    try {
+      return await product.update(modifiedProduct);
+    } catch (error) {
+      throw boom.conflict(error.message);
+    }
   }
 
   async deleteProduct(id) {
     // const all_products = await Promise.resolve(products);
     // return all_products.filter((product) => product.id !== parseInt(id));
-    const deleteProduct = "DELETE FROM PRODUCTS WHERE ID=$1 RETURNING *";
-    const values = [id];
+    // const deleteProduct = "DELETE FROM PRODUCTS WHERE ID=$1 RETURNING *";
+    // const values = [id];
 
-    const dbClient = await this.client.connect();
-    const deletedProduct = await dbClient.query(deleteProduct, values);
-    dbClient.release();
+    // const dbClient = await this.client.connect();
+    // const deletedProduct = await dbClient.query(deleteProduct, values);
+    // dbClient.release();
 
-    const affectedRows = deletedProduct.rows.length;
+    // const affectedRows = deletedProduct.rows.length;
 
-    if (affectedRows === 0) {
-      throw boom.conflict("Product no deleted");
+    // if (affectedRows === 0) {
+    //   throw boom.conflict("Product no deleted");
+    // }
+
+    // return deletedProduct.rows[0].id;
+    const deletedProduct = await models.Products.findByPk(id);
+    if (!deletedProduct) {
+      throw boom.conflict("Not resource deleted");
     }
-
-    return deletedProduct.rows[0].id;
+    await deletedProduct.destroy();
+    return { id };
   }
 }
 

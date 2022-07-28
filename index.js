@@ -2,6 +2,7 @@ const express = require("express");
 
 const productRouter = require("./src/routes/products");
 const usersRouter = require("./src/routes/users");
+const authRouter = require("./src/routes/auth");
 
 const {
   logErrors,
@@ -21,8 +22,11 @@ app.use((req, res, next) => {
   next();
 });
 
+require("./src/utils/auth");
+
 app.use("/products", productRouter);
 app.use("/users", usersRouter);
+app.use("/auth", authRouter);
 
 app.use(logErrors);
 app.use(clientErrorHandler);
