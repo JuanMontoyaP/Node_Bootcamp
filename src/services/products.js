@@ -24,7 +24,7 @@ class ProductService {
     // dbClient.release();
     const products = await models.Products.findAll();
 
-    if (!products) {
+    if (!products || products.length === 0) {
       throw boom.notFound("Not found products");
     }
 
