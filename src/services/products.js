@@ -17,12 +17,17 @@ class ProductService {
     // const result = await dbClient.query("SELECT * FROM PRODUCTS");
     // const GETPRODUCTS = "SELECT * FROM PRODUCTS";
     // const [result, metadata] = await sequelize.query(GETPRODUCTS);
-    const products = await models.Products.findAll();
     // if (products.length === 0) {
     //   // throw new NotFoundError("Not found products", 404, "Database empty");
     //   throw boom.notFound("Not found products");
     // }
     // dbClient.release();
+    const products = await models.Products.findAll();
+
+    if (!products) {
+      throw boom.notFound("Not found products");
+    }
+
     return products;
   }
 
@@ -36,18 +41,27 @@ class ProductService {
     //   throw boom.forbidden("Not allowed");
     // }
     // return product;
-    const dbClient = await this.client.connect();
-    const result = await dbClient.query("SELECT * FROM PRODUCTS WHERE ID=$1", [
-      id,
-    ]);
+    // const dbClient = await this.client.connect();
+    // const result = await dbClient.query("SELECT * FROM PRODUCTS WHERE ID=$1", [
+    //   id,
+    // ]);
+    // if (result.rows.length === 0) {
+    //   throw boom.notFound("Product not found");
+    // }
+    // dbClient.release();
+    // return result.rows[0];
 
-    if (result.rows.length === 0) {
+    const product = await models.Products.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!product) {
       throw boom.notFound("Product not found");
     }
 
-    dbClient.release();
-
-    return result.rows[0];
+    return product;
   }
 
   async getProductsByName(name) {
@@ -59,25 +73,27 @@ class ProductService {
     // const all_products = await Promise.resolve(products);
     // all_products.push(product);
     // return all_products;
-
-    const newProduct =
-      "INSERT INTO PRODUCTS (name, price, currency, description) VALUES ($1,$2,$3,$4) RETURNING *";
-
-    const values = [
-      product.name,
-      product.price,
-      product.currency,
-      product.description,
-    ];
-
+    // const newProduct =
+    //   "INSERT INTO PRODUCTS (name, price, currency, description) VALUES ($1,$2,$3,$4) RETURNING *";
+    // const values = [
+    //   product.name,
+    //   product.price,
+    //   product.currency,
+    //   product.description,
+    // ];
+    // try {
+    //   const dbClient = await this.client.connect();
+    //   const productCreated = await dbClient.query(newProduct, values);
+    //   dbClient.release();
+    //   return productCreated.rows[0];
+    // } catch (error) {
+    //   throw boom.conflict(error);
+    // }
     try {
-      const dbClient = await this.client.connect();
-      const productCreated = await dbClient.query(newProduct, values);
-      dbClient.release();
-
-      return productCreated.rows[0];
+      const productCreated = await models.Products.create(product);
+      return productCreated;
     } catch (error) {
-      throw boom.conflict(error);
+      throw boom.internal(error.message);
     }
   }
 
