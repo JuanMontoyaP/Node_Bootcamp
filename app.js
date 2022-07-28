@@ -1,4 +1,6 @@
 const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
 
 const productRouter = require("./src/routes/products");
 const usersRouter = require("./src/routes/users");
@@ -14,6 +16,12 @@ const {
 const app = express();
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "localhost:8080",
+  })
+);
+app.use(helmet());
 
 app.use((req, res, next) => {
   console.log("Principal");
