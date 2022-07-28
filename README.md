@@ -4,7 +4,10 @@ This project was made while I was learning about Node.js and REST APIs.
 
 ## How to run this project?
 
-This project
+To run this project just run the following command:
+
+    npm install
+    node index.js
 
 ## What is an API and a REST API?
 
